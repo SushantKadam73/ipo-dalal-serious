@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
-import { IPOType } from "@/types/ipo";
 import { cn } from "@/lib/utils";
+
+type IPOType = "BSE SME" | "NSE SME" | "Mainline";
 
 interface IPOBadgeProps {
   type: IPOType;
@@ -10,7 +11,7 @@ interface IPOBadgeProps {
 export function IPOBadge({ type, className }: IPOBadgeProps) {
   const getVariantStyles = (type: IPOType) => {
     switch (type) {
-      case "Mainboard":
+      case "Mainline":
         return "bg-primary/20 text-primary border-primary/30";
       case "NSE SME":
         return "bg-secondary/20 text-secondary border-secondary/30";

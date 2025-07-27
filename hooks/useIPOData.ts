@@ -158,7 +158,7 @@ export function useUpdateIPOListingDetails() {
 
 // Seed IPOs
 export function useSeedIPOs() {
-  const seedIPOs = useMutation(api["seed-data"].seedIPOs);
+  const seedIPOs = useMutation(api["seed_data"].seedIPOs);
   
   return {
     seedIPOs,
@@ -167,7 +167,7 @@ export function useSeedIPOs() {
 
 // Seed GMP history
 export function useSeedGMPHistory() {
-  const seedGMPHistory = useMutation(api["seed-data"].seedGMPHistory);
+  const seedGMPHistory = useMutation(api["seed_data"].seedGMPHistory);
   
   return {
     seedGMPHistory,
@@ -176,7 +176,7 @@ export function useSeedGMPHistory() {
 
 // Seed subscription history
 export function useSeedSubscriptionHistory() {
-  const seedSubscriptionHistory = useMutation(api["seed-data"].seedSubscriptionHistory);
+  const seedSubscriptionHistory = useMutation(api["seed_data"].seedSubscriptionHistory);
   
   return {
     seedSubscriptionHistory,
@@ -185,7 +185,7 @@ export function useSeedSubscriptionHistory() {
 
 // Clear all data
 export function useClearAllData() {
-  const clearAllData = useMutation(api["seed-data"].clearAllData);
+  const clearAllData = useMutation(api["seed_data"].clearAllData);
   
   return {
     clearAllData,

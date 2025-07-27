@@ -6,22 +6,41 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { IPOBadge } from "@/components/common/ipo-badge";
 import { GMPIndicator } from "@/components/common/gmp-indicator";
-import { RefreshCw, Download, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
-import { allMockIPOs } from "@/lib/mock-data";
-import { IPO } from "@/types/ipo";
+import { RefreshCw, Download, ArrowUpDown, ArrowUp, ArrowDown, Database, AlertCircle } from "lucide-react";
+import { useSubscriptionAggregatorData, useIPODataRefresh } from "@/hooks/useIPOData";
+import { FrontendIPO } from "@/types/database";
 import { formatIndianCurrency, formatIndianDate, formatSubscriptionTimes } from "@/lib/formatters";
 
 type SortField = "type" | "company" | "ipoSize" | "gmp.percentage" | "subscription.total" | "subscription.qib" | "subscription.retail" | "dates.closing";
 
 export default function SubscriptionAggregator() {
-  const [loading, setLoading] = useState(false);
   const [sortField, setSortField] = useState<SortField>("dates.closing");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
+  // Use real database hooks
+  const { data: allIPOs, isLoading } = useSubscriptionAggregatorData();
+  const { seedAllData } = useIPODataRefresh();
+  
+  // Only show active/upcoming IPOs for subscription data
+  const ipos = allIPOs?.filter(ipo => ipo.status !== "listed") || [];
+  const hasData = ipos.length > 0;
+
   const handleRefresh = async () => {
-    setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setLoading(false);
+    window.location.reload();
+  };
+
+  const handleSeedDatabase = async () => {
+    try {
+      console.log("Seeding database...");
+      const result = await seedAllData();
+      if (result.success) {
+        console.log("Database seeded successfully");
+      } else {
+        console.error("Database seeding failed:", result.error);
+      }
+    } catch (error) {
+      console.error("Error seeding database:", error);
+    }
   };
 
   const handleSort = (field: SortField) => {
@@ -42,10 +61,7 @@ export default function SubscriptionAggregator() {
     return path.split('.').reduce((value, key) => value?.[key], obj);
   };
 
-  // Only show active/upcoming IPOs for subscription data
-  const activeIPOs = allMockIPOs.filter(ipo => ipo.status !== "listed");
-
-  const sortedIPOs = [...activeIPOs].sort((a, b) => {
+  const sortedIPOs = [...ipos].sort((a, b) => {
     const aValue = getNestedValue(a, sortField);
     const bValue = getNestedValue(b, sortField);
     
@@ -101,10 +117,23 @@ export default function SubscriptionAggregator() {
           </div>
           
           <div className="flex items-center gap-2 mt-4 md:mt-0">
+            {!hasData && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSeedDatabase}
+                disabled={isLoading}
+                className="flex items-center gap-2"
+              >
+                <Database className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+                Seed Database
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
               onClick={exportToCSV}
+              disabled={!hasData}
               className="flex items-center gap-2"
             >
               <Download className="w-4 h-4" />
@@ -114,10 +143,10 @@ export default function SubscriptionAggregator() {
               variant="outline"
               size="sm"
               onClick={handleRefresh}
-              disabled={loading}
+              disabled={isLoading}
               className="flex items-center gap-2"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+              <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
               Refresh
             </Button>
           </div>
@@ -261,7 +290,7 @@ export default function SubscriptionAggregator() {
                   </tr>
                 </thead>
                 <tbody>
-                  {loading ? (
+                  {isLoading ? (
                     [...Array(5)].map((_, index) => (
                       <tr key={index}>
                         {[...Array(14)].map((_, cellIndex) => (
@@ -271,10 +300,22 @@ export default function SubscriptionAggregator() {
                         ))}
                       </tr>
                     ))
-                  ) : sortedIPOs.length === 0 ? (
+                  ) : !hasData ? (
                     <tr>
-                      <td colSpan={14} className="text-center py-8 text-muted-foreground">
-                        No IPOs available for subscription tracking
+                      <td colSpan={14} className="text-center py-8">
+                        <div className="flex flex-col items-center gap-4">
+                          <AlertCircle className="w-12 h-12 text-muted-foreground" />
+                          <div>
+                            <p className="text-lg font-medium text-muted-foreground mb-2">No Data Available</p>
+                            <p className="text-sm text-muted-foreground mb-4">
+                              Click "Seed Database" to populate with sample IPO data
+                            </p>
+                            <Button onClick={handleSeedDatabase} className="flex items-center gap-2">
+                              <Database className="w-4 h-4" />
+                              Seed Database
+                            </Button>
+                          </div>
+                        </div>
                       </td>
                     </tr>
                   ) : (
@@ -367,13 +408,19 @@ export default function SubscriptionAggregator() {
                         
                         <td className="p-3 text-right">
                           <span className="font-medium">
-                            {formatIndianCurrency(ipo.subscription.totalBidAmount, { showCrores: true, compact: true })}
+                            {ipo.subscription.totalBidAmount ?
+                              formatIndianCurrency(ipo.subscription.totalBidAmount, { showCrores: true, compact: true }) :
+                              "-"
+                            }
                           </span>
                         </td>
                         
                         <td className="p-3 text-center">
                           <span className="font-medium">
-                            {(ipo.subscription.totalApplications / 100000).toFixed(1)}L
+                            {ipo.subscription.totalApplications ?
+                              `${(ipo.subscription.totalApplications / 100000).toFixed(1)}L` :
+                              "-"
+                            }
                           </span>
                         </td>
                         
@@ -393,8 +440,16 @@ export default function SubscriptionAggregator() {
 
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-muted-foreground">
-          <p>Subscription data updated every 5-10 minutes during market hours</p>
+          <p>
+            {hasData
+              ? "Real-time data from database • Updated automatically"
+              : "Database is empty • Use admin panel to seed with data"
+            }
+          </p>
           <p className="mt-1">QIB: Qualified Institutional Buyers | BHNI: Big HNI (&gt;10L) | SHNI: Small HNI (2L-10L)</p>
+          <p className="mt-1 text-xs text-blue-500">
+            Database Status: {hasData ? "Connected & Populated" : "Empty - Seed Required"}
+          </p>
         </div>
       </main>
     </div>

@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { ListedIPO } from "@/types/ipo";
+import { FrontendIPO } from "@/types/database";
 import { IPOBadge } from "@/components/common/ipo-badge";
 import { formatIndianCurrency, formatIndianDate, formatPercentage } from "@/lib/formatters";
 import { TrendingUp, TrendingDown, Minus, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ListedIPOsTableProps {
-  data: ListedIPO[];
+  data: FrontendIPO[];
   loading?: boolean;
-  onRowClick?: (ipo: ListedIPO) => void;
+  onRowClick?: (ipo: FrontendIPO) => void;
   className?: string;
 }
 
@@ -282,12 +282,16 @@ export function ListedIPOsTable({
                 </td>
                 
                 <td className="p-3 text-center">
-                  <div className={`flex items-center justify-center gap-1 ${getListingGainsColor(ipo.listingGains)}`}>
-                    {getListingGainsIcon(ipo.listingGains)}
-                    <span className="font-bold">
-                      {ipo.listingGains >= 0 ? "+" : ""}{formatPercentage(ipo.listingGains)}
-                    </span>
-                  </div>
+                  {ipo.listingGains !== undefined ? (
+                    <div className={`flex items-center justify-center gap-1 ${getListingGainsColor(ipo.listingGains)}`}>
+                      {getListingGainsIcon(ipo.listingGains)}
+                      <span className="font-bold">
+                        {ipo.listingGains >= 0 ? "+" : ""}{formatPercentage(ipo.listingGains)}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground">-</span>
+                  )}
                 </td>
                 
                 <td className="p-3 text-center">
@@ -296,7 +300,7 @@ export function ListedIPOsTable({
                       GMP: {formatPercentage(ipo.gmp.percentage)}
                     </span>
                     <span className="text-xs">
-                      {Math.abs(ipo.listingGains - ipo.gmp.percentage) < 5 ? "✅ Accurate" : "❌ Off"}
+                      {ipo.listingGains !== undefined && Math.abs(ipo.listingGains - ipo.gmp.percentage) < 5 ? "✅ Accurate" : "❌ Off"}
                     </span>
                   </div>
                 </td>
@@ -318,7 +322,7 @@ export function ListedIPOsTable({
                 
                 <td className="p-3 text-center">
                   <span className="text-sm text-muted-foreground">
-                    {formatIndianDate(ipo.listingDate)}
+                    {ipo.listingDate ? formatIndianDate(ipo.listingDate) : "-"}
                   </span>
                 </td>
               </tr>

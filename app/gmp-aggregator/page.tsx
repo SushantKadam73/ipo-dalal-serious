@@ -6,22 +6,38 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { IPOBadge } from "@/components/common/ipo-badge";
 import { GMPIndicator } from "@/components/common/gmp-indicator";
-import { RefreshCw, Download, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
-import { allMockIPOs } from "@/lib/mock-data";
-import { IPO } from "@/types/ipo";
+import { RefreshCw, Download, ArrowUpDown, ArrowUp, ArrowDown, Database, AlertCircle } from "lucide-react";
+import { useGMPAggregatorData, useIPODataRefresh } from "@/hooks/useIPOData";
+import { FrontendIPO } from "@/types/database";
 import { formatIndianCurrency, formatIndianDate, formatSubscriptionTimes } from "@/lib/formatters";
 
 type SortField = "type" | "company" | "ipoSize" | "gmp.percentage" | "subscription.total" | "dates.closing";
 
 export default function GMPAggregator() {
-  const [loading, setLoading] = useState(false);
   const [sortField, setSortField] = useState<SortField>("dates.closing");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
+  // Use real database hooks
+  const { data: ipos, isLoading } = useGMPAggregatorData();
+  const { seedAllData } = useIPODataRefresh();
+  const hasData = ipos && ipos.length > 0;
+
   const handleRefresh = async () => {
-    setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setLoading(false);
+    window.location.reload();
+  };
+
+  const handleSeedDatabase = async () => {
+    try {
+      console.log("Seeding database...");
+      const result = await seedAllData();
+      if (result.success) {
+        console.log("Database seeded successfully");
+      } else {
+        console.error("Database seeding failed:", result.error);
+      }
+    } catch (error) {
+      console.error("Error seeding database:", error);
+    }
   };
 
   const handleSort = (field: SortField) => {
@@ -42,7 +58,7 @@ export default function GMPAggregator() {
     return path.split('.').reduce((value, key) => value?.[key], obj);
   };
 
-  const sortedIPOs = [...allMockIPOs].sort((a, b) => {
+  const sortedIPOs = (ipos || []).sort((a, b) => {
     const aValue = getNestedValue(a, sortField);
     const bValue = getNestedValue(b, sortField);
     
@@ -95,10 +111,23 @@ export default function GMPAggregator() {
           </div>
           
           <div className="flex items-center gap-2 mt-4 md:mt-0">
+            {!hasData && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSeedDatabase}
+                disabled={isLoading}
+                className="flex items-center gap-2"
+              >
+                <Database className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+                Seed Database
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
               onClick={exportToCSV}
+              disabled={!hasData}
               className="flex items-center gap-2"
             >
               <Download className="w-4 h-4" />
@@ -108,10 +137,10 @@ export default function GMPAggregator() {
               variant="outline"
               size="sm"
               onClick={handleRefresh}
-              disabled={loading}
+              disabled={isLoading}
               className="flex items-center gap-2"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+              <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
               Refresh
             </Button>
           </div>
@@ -226,7 +255,7 @@ export default function GMPAggregator() {
                   </tr>
                 </thead>
                 <tbody>
-                  {loading ? (
+                  {isLoading ? (
                     [...Array(5)].map((_, index) => (
                       <tr key={index}>
                         {[...Array(11)].map((_, cellIndex) => (
@@ -236,10 +265,22 @@ export default function GMPAggregator() {
                         ))}
                       </tr>
                     ))
-                  ) : sortedIPOs.length === 0 ? (
+                  ) : !hasData ? (
                     <tr>
-                      <td colSpan={11} className="text-center py-8 text-muted-foreground">
-                        No IPOs available
+                      <td colSpan={11} className="text-center py-8">
+                        <div className="flex flex-col items-center gap-4">
+                          <AlertCircle className="w-12 h-12 text-muted-foreground" />
+                          <div>
+                            <p className="text-lg font-medium text-muted-foreground mb-2">No Data Available</p>
+                            <p className="text-sm text-muted-foreground mb-4">
+                              Click "Seed Database" to populate with sample IPO data
+                            </p>
+                            <Button onClick={handleSeedDatabase} className="flex items-center gap-2">
+                              <Database className="w-4 h-4" />
+                              Seed Database
+                            </Button>
+                          </div>
+                        </div>
                       </td>
                     </tr>
                   ) : (
@@ -345,8 +386,16 @@ export default function GMPAggregator() {
 
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-muted-foreground">
-          <p>GMP data is indicative and sourced from grey market • Updated every 15-30 minutes</p>
-          <p className="mt-1">Investment decisions should not be based solely on GMP data</p>
+          <p>
+            {hasData
+              ? "Real-time data from database • Updated automatically"
+              : "Database is empty • Use admin panel to seed with data"
+            }
+          </p>
+          <p className="mt-1">GMP data is indicative and sourced from grey market</p>
+          <p className="mt-1 text-xs text-blue-500">
+            Database Status: {hasData ? "Connected & Populated" : "Empty - Seed Required"}
+          </p>
         </div>
       </main>
     </div>

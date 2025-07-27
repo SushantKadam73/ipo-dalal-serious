@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { LiveIPO } from "@/types/ipo";
+import { FrontendIPO } from "@/types/database";
 import { IPOBadge } from "@/components/common/ipo-badge";
 import { GMPIndicator } from "@/components/common/gmp-indicator";
 import { formatIndianCurrency, formatIndianDate } from "@/lib/formatters";
@@ -9,9 +9,9 @@ import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface LiveIPOsTableProps {
-  data: LiveIPO[];
+  data: FrontendIPO[];
   loading?: boolean;
-  onRowClick?: (ipo: LiveIPO) => void;
+  onRowClick?: (ipo: FrontendIPO) => void;
   className?: string;
 }
 

@@ -90,7 +90,7 @@ getSubscriptionTrends(ipo_id, hours)
 convex/
 ├── schema.ts              # Database schema (PRD compliant)
 ├── ipo-functions.ts       # Main mutations and queries
-├── seed-data.ts          # Data seeding functions
+├── seed_data.ts          # Data seeding functions
 └── _generated/           # Auto-generated API files
 
 types/
