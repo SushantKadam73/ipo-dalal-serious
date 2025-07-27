@@ -7,20 +7,68 @@ import { ListedIPOsTable } from "@/components/tables/listed-ipos-table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Activity, TrendingUp } from "lucide-react";
+import { RefreshCw, Activity, TrendingUp, Database } from "lucide-react";
 import { mockLiveIPOs, mockListedIPOs } from "@/lib/mock-data";
 import { LiveIPO, ListedIPO } from "@/types/ipo";
+// Note: These hooks will work once Convex generates the API
+// import { useLiveIPOs, useListedIPOs, useIPODataRefresh } from "@/hooks/useIPOData";
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(false);
+  const [useRealData, setUseRealData] = useState(false);
+  
+  // Mock data (fallback)
   const [liveIPOs] = useState<LiveIPO[]>(mockLiveIPOs);
   const [listedIPOs] = useState<ListedIPO[]>(mockListedIPOs);
+  
+  // Real data hooks (will be enabled once API is generated)
+  // const { data: realLiveIPOs, isLoading: liveLoading } = useLiveIPOs();
+  // const { data: realListedIPOs, isLoading: listedLoading } = useListedIPOs();
+  // const { seedAllData } = useIPODataRefresh();
+  
+  // Use real data if available, otherwise fall back to mock data
+  const displayLiveIPOs = useRealData ? [] : liveIPOs; // realLiveIPOs ||
+  const displayListedIPOs = useRealData ? [] : listedIPOs; // realListedIPOs ||
+  const isDataLoading = loading; // || liveLoading || listedLoading;
 
   const handleRefresh = async () => {
     setLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setLoading(false);
+    try {
+      if (useRealData) {
+        // Refresh real data
+        console.log("Refreshing database data...");
+        // Note: This will work once the API is generated
+        // await seedAllData();
+      } else {
+        // Simulate API call for mock data
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    } catch (error) {
+      console.error("Error refreshing data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleSeedDatabase = async () => {
+    setLoading(true);
+    try {
+      console.log("Seeding database with mock data...");
+      // Note: This will work once the API is generated
+      // const result = await seedAllData();
+      // if (result.success) {
+      //   setUseRealData(true);
+      //   console.log("Database seeded successfully");
+      // }
+      
+      // For now, simulate the seeding
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log("Database seeding simulated (API not yet generated)");
+    } catch (error) {
+      console.error("Error seeding database:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleIPOClick = (ipo: LiveIPO | ListedIPO) => {
@@ -48,6 +96,16 @@ export default function Dashboard() {
             <Button
               variant="outline"
               size="sm"
+              onClick={handleSeedDatabase}
+              disabled={loading}
+              className="flex items-center gap-2"
+            >
+              <Database className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+              {useRealData ? "Reseed DB" : "Seed Database"}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={handleRefresh}
               disabled={loading}
               className="flex items-center gap-2"
@@ -65,7 +123,7 @@ export default function Dashboard() {
               <Activity className="w-5 h-5 text-primary" />
               Active IPOs
               <span className="text-sm font-normal text-muted-foreground">
-                ({liveIPOs.length} IPOs)
+                ({displayLiveIPOs.length} IPOs) {useRealData ? "• Real Data" : "• Mock Data"}
               </span>
             </CardTitle>
             <CardDescription>
@@ -74,8 +132,8 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <LiveIPOsTable
-              data={liveIPOs}
-              loading={loading}
+              data={displayLiveIPOs}
+              loading={isDataLoading}
               onRowClick={handleIPOClick}
             />
           </CardContent>
@@ -91,7 +149,7 @@ export default function Dashboard() {
               <TrendingUp className="w-5 h-5 text-secondary" />
               Listed IPOs
               <span className="text-sm font-normal text-muted-foreground">
-                ({listedIPOs.length} IPOs)
+                ({displayListedIPOs.length} IPOs) {useRealData ? "• Real Data" : "• Mock Data"}
               </span>
             </CardTitle>
             <CardDescription>
@@ -100,8 +158,8 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <ListedIPOsTable
-              data={listedIPOs}
-              loading={loading}
+              data={displayListedIPOs}
+              loading={isDataLoading}
               onRowClick={handleIPOClick}
             />
           </CardContent>
@@ -109,9 +167,17 @@ export default function Dashboard() {
 
         {/* Footer Note */}
         <div className="mt-8 text-center text-sm text-muted-foreground">
-          <p>Data updated every 15-30 minutes • GMP rates are indicative and not guaranteed</p>
+          <p>
+            {useRealData
+              ? "Real-time data from database • Updated automatically"
+              : "Using mock data for demonstration • Click 'Seed Database' to use real data"
+            }
+          </p>
           <p className="mt-1">
-            Invest responsibly • Past performance does not guarantee future results
+            GMP rates are indicative and not guaranteed • Invest responsibly
+          </p>
+          <p className="mt-1 text-xs text-blue-500">
+            Database Status: {useRealData ? "Connected & Seeded" : "Mock Data Mode"}
           </p>
         </div>
       </main>

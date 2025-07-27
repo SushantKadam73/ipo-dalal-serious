@@ -13,7 +13,9 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as ipo_functions from "../ipo_functions.js";
 import type * as myFunctions from "../myFunctions.js";
+import type * as seed_data from "../seed_data.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -24,7 +26,9 @@ import type * as myFunctions from "../myFunctions.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  ipo_functions: typeof ipo_functions;
   myFunctions: typeof myFunctions;
+  seed_data: typeof seed_data;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
