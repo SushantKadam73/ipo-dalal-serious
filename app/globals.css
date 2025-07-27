@@ -1,0 +1,168 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Josefin+Sans:wght@400;700&display=swap');
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-josefin-sans);
+  --font-heading: var(--font-space-grotesk);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  
+  /* IPO Dalal Custom Font Variables */
+  --font-space-grotesk: 'Space Grotesk', sans-serif;
+  --font-josefin-sans: 'Josefin Sans', sans-serif;
+  
+  /* IPO Dalal Dark Theme Colors */
+  --text: #f9eee7;
+  --background: #0c0c0c;
+  --primary: #28bdb3;
+  --secondary: #AB4565;
+  --accent: #59acb1;
+  
+  /* Component Colors based on IPO Dalal palette */
+  --foreground: var(--text);
+  --card: #1a1a1a;
+  --card-foreground: var(--text);
+  --popover: #1a1a1a;
+  --popover-foreground: var(--text);
+  --primary-foreground: var(--background);
+  --secondary-foreground: var(--text);
+  --muted: #2a2a2a;
+  --muted-foreground: #888888;
+  --accent-foreground: var(--background);
+  --destructive: #ff4444;
+  --destructive-foreground: var(--text);
+  --border: #333333;
+  --input: #2a2a2a;
+  --ring: var(--primary);
+  
+  /* GMP Color Coding */
+  --gmp-low: #22c55e;      /* 0-15% */
+  --gmp-medium: #16a34a;   /* 15-30% */
+  --gmp-high: #15803d;     /* 30-50% */
+  --gmp-very-high: #14532d; /* 50%+ */
+  
+  /* Chart Colors */
+  --chart-1: var(--primary);
+  --chart-2: var(--secondary);
+  --chart-3: var(--accent);
+  --chart-4: #22c55e;
+  --chart-5: #f97316;
+}
+
+/* Force dark theme as default */
+.dark, :root {
+  --background: #0c0c0c;
+  --foreground: #f9eee7;
+  --card: #1a1a1a;
+  --card-foreground: #f9eee7;
+  --popover: #1a1a1a;
+  --popover-foreground: #f9eee7;
+  --primary: #28bdb3;
+  --primary-foreground: #0c0c0c;
+  --secondary: #AB4565;
+  --secondary-foreground: #f9eee7;
+  --muted: #2a2a2a;
+  --muted-foreground: #888888;
+  --accent: #59acb1;
+  --accent-foreground: #0c0c0c;
+  --destructive: #ff4444;
+  --destructive-foreground: #f9eee7;
+  --border: #333333;
+  --input: #2a2a2a;
+  --ring: #28bdb3;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-josefin-sans);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-space-grotesk);
+    font-weight: 700;
+  }
+  
+  /* Custom font sizes matching the design system */
+  .text-sm { font-size: 0.750rem; }
+  .text-base { font-size: 1rem; }
+  .text-xl { font-size: 1.333rem; }
+  .text-2xl { font-size: 1.777rem; }
+  .text-3xl { font-size: 2.369rem; }
+  .text-4xl { font-size: 3.158rem; }
+  .text-5xl { font-size: 4.210rem; }
+  
+  /* GMP indicator classes */
+  .gmp-low { color: var(--gmp-low); }
+  .gmp-medium { color: var(--gmp-medium); }
+  .gmp-high { color: var(--gmp-high); }
+  .gmp-very-high { color: var(--gmp-very-high); }
+  
+  /* Indian number formatting */
+  .indian-currency::before {
+    content: "₹";
+  }
+  
+  /* Table styling improvements */
+  .data-table {
+    @apply border-collapse border-spacing-0;
+  }
+  
+  .data-table th {
+    @apply bg-muted text-left p-3 font-bold border-b border-border;
+    font-family: var(--font-space-grotesk);
+  }
+  
+  .data-table td {
+    @apply p-3 border-b border-border/50;
+  }
+  
+  .data-table tr:hover {
+    @apply bg-muted/30;
+  }
+}

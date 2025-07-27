@@ -1,0 +1,354 @@
+"use client";
+
+import { useState } from "react";
+import { Header } from "@/components/layout/header";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { IPOBadge } from "@/components/common/ipo-badge";
+import { GMPIndicator } from "@/components/common/gmp-indicator";
+import { RefreshCw, Download, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { allMockIPOs } from "@/lib/mock-data";
+import { IPO } from "@/types/ipo";
+import { formatIndianCurrency, formatIndianDate, formatSubscriptionTimes } from "@/lib/formatters";
+
+type SortField = "type" | "company" | "ipoSize" | "gmp.percentage" | "subscription.total" | "dates.closing";
+
+export default function GMPAggregator() {
+  const [loading, setLoading] = useState(false);
+  const [sortField, setSortField] = useState<SortField>("dates.closing");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  const handleRefresh = async () => {
+    setLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setLoading(false);
+  };
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) return <ArrowUpDown className="w-4 h-4" />;
+    return sortDirection === "asc" ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />;
+  };
+
+  const getNestedValue = (obj: any, path: string) => {
+    return path.split('.').reduce((value, key) => value?.[key], obj);
+  };
+
+  const sortedIPOs = [...allMockIPOs].sort((a, b) => {
+    const aValue = getNestedValue(a, sortField);
+    const bValue = getNestedValue(b, sortField);
+    
+    if (aValue === bValue) return 0;
+    const comparison = aValue < bValue ? -1 : 1;
+    return sortDirection === "asc" ? comparison : -comparison;
+  });
+
+  const exportToCSV = () => {
+    const csvContent = [
+      ["Type", "Company", "Size (₹Cr)", "Price (₹)", "GMP %", "Est. Listing Price (₹)", "Est. Profit (₹)", "Kostak Rates (₹)", "Subject 2 Sauda Rates (₹)", "Total Subscription", "Closing Date"].join(","),
+      ...sortedIPOs.map(ipo => [
+        ipo.type,
+        `"${ipo.company}"`,
+        ipo.ipoSize,
+        `"₹${ipo.price.min} - ₹${ipo.price.max}"`,
+        ipo.gmp.percentage,
+        ipo.gmp.estListingPrice,
+        `"${formatIndianCurrency(ipo.gmp.estProfit.retail)} / ${formatIndianCurrency(ipo.gmp.estProfit.shni)}"`,
+        `"₹${ipo.kostakRates.retail} / ₹${ipo.kostakRates.shni}"`,
+        `"₹${ipo.subjectToSauda.retail} / ₹${ipo.subjectToSauda.shni}"`,
+        ipo.subscription.total,
+        formatIndianDate(ipo.dates.closing)
+      ].join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `ipo-gmp-data-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      
+      <main className="container mx-auto px-4 py-8">
+        {/* Page Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold font-heading text-foreground mb-2">
+              GMP Aggregator
+            </h1>
+            <p className="text-muted-foreground">
+              Comprehensive Grey Market Premium data for all IPOs
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-2 mt-4 md:mt-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={exportToCSV}
+              className="flex items-center gap-2"
+            >
+              <Download className="w-4 h-4" />
+              Export CSV
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={loading}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+              Refresh
+            </Button>
+          </div>
+        </div>
+
+        {/* GMP Data Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle>IPO GMP Data</CardTitle>
+            <CardDescription>
+              Grey Market Premium data with kostak rates, subject to sauda rates, and subscription details
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="w-full overflow-x-auto">
+              <table className="w-full data-table">
+                <thead>
+                  <tr>
+                    <th className="p-3 text-left font-bold border-b border-border bg-muted">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("type")}
+                        className="h-auto p-0 font-bold hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          Type
+                          {getSortIcon("type")}
+                        </div>
+                      </Button>
+                    </th>
+                    <th className="p-3 text-left font-bold border-b border-border bg-muted">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("company")}
+                        className="h-auto p-0 font-bold hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          Company
+                          {getSortIcon("company")}
+                        </div>
+                      </Button>
+                    </th>
+                    <th className="p-3 text-right font-bold border-b border-border bg-muted">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("ipoSize")}
+                        className="h-auto p-0 font-bold hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          Size (₹Cr)
+                          {getSortIcon("ipoSize")}
+                        </div>
+                      </Button>
+                    </th>
+                    <th className="p-3 text-center font-bold border-b border-border bg-muted">
+                      Price (₹)
+                    </th>
+                    <th className="p-3 text-center font-bold border-b border-border bg-muted">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("gmp.percentage")}
+                        className="h-auto p-0 font-bold hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          GMP %
+                          {getSortIcon("gmp.percentage")}
+                        </div>
+                      </Button>
+                    </th>
+                    <th className="p-3 text-center font-bold border-b border-border bg-muted">
+                      Est. Listing Price (₹)
+                    </th>
+                    <th className="p-3 text-right font-bold border-b border-border bg-muted">
+                      Est. Profit (₹)
+                    </th>
+                    <th className="p-3 text-center font-bold border-b border-border bg-muted">
+                      Kostak Rates (₹)
+                    </th>
+                    <th className="p-3 text-center font-bold border-b border-border bg-muted">
+                      Subject 2 Sauda Rates (₹)
+                    </th>
+                    <th className="p-3 text-center font-bold border-b border-border bg-muted">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("subscription.total")}
+                        className="h-auto p-0 font-bold hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          Total Subscription
+                          {getSortIcon("subscription.total")}
+                        </div>
+                      </Button>
+                    </th>
+                    <th className="p-3 text-center font-bold border-b border-border bg-muted">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("dates.closing")}
+                        className="h-auto p-0 font-bold hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          Closing Date
+                          {getSortIcon("dates.closing")}
+                        </div>
+                      </Button>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    [...Array(5)].map((_, index) => (
+                      <tr key={index}>
+                        {[...Array(11)].map((_, cellIndex) => (
+                          <td key={cellIndex} className="p-3 border-b border-border/50">
+                            <div className="h-4 bg-muted rounded animate-pulse" />
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  ) : sortedIPOs.length === 0 ? (
+                    <tr>
+                      <td colSpan={11} className="text-center py-8 text-muted-foreground">
+                        No IPOs available
+                      </td>
+                    </tr>
+                  ) : (
+                    sortedIPOs.map((ipo) => (
+                      <tr key={ipo.id} className="border-b border-border/50 hover:bg-muted/30">
+                        <td className="p-3">
+                          <IPOBadge type={ipo.type} />
+                        </td>
+                        
+                        <td className="p-3">
+                          <div className="flex flex-col">
+                            <span className="font-medium text-foreground">
+                              {ipo.company}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {ipo.industry}
+                            </span>
+                          </div>
+                        </td>
+                        
+                        <td className="p-3 text-right">
+                          <span className="font-medium">
+                            {formatIndianCurrency(ipo.ipoSize, { showCrores: true, compact: true })}
+                          </span>
+                        </td>
+                        
+                        <td className="p-3 text-center">
+                          <span className="text-sm">
+                            ₹{ipo.price.min} - ₹{ipo.price.max}
+                          </span>
+                        </td>
+                        
+                        <td className="p-3 text-center">
+                          <GMPIndicator
+                            percentage={ipo.gmp.percentage}
+                            price={ipo.gmp.price}
+                            size="sm"
+                          />
+                        </td>
+                        
+                        <td className="p-3 text-center">
+                          <span className="font-bold text-primary">
+                            ₹{ipo.gmp.estListingPrice}
+                          </span>
+                        </td>
+                        
+                        <td className="p-3 text-right">
+                          <div className="flex flex-col">
+                            <span className={`font-medium text-sm ${
+                              ipo.gmp.estProfit.retail >= 0 ? "text-green-500" : "text-red-500"
+                            }`}>
+                              {formatIndianCurrency(ipo.gmp.estProfit.retail, { compact: true })}
+                            </span>
+                            <span className={`text-xs ${
+                              ipo.gmp.estProfit.shni >= 0 ? "text-green-500" : "text-red-500"
+                            }`}>
+                              {formatIndianCurrency(ipo.gmp.estProfit.shni, { compact: true })}
+                            </span>
+                          </div>
+                        </td>
+                        
+                        <td className="p-3 text-center">
+                          <div className="flex flex-col">
+                            <span className="text-sm">
+                              ₹{ipo.kostakRates.retail}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              ₹{ipo.kostakRates.shni}
+                            </span>
+                          </div>
+                        </td>
+                        
+                        <td className="p-3 text-center">
+                          <div className="flex flex-col">
+                            <span className="text-sm">
+                              ₹{ipo.subjectToSauda.retail}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              ₹{ipo.subjectToSauda.shni}
+                            </span>
+                          </div>
+                        </td>
+                        
+                        <td className="p-3 text-center">
+                          <span className="font-medium">
+                            {formatSubscriptionTimes(ipo.subscription.total)}
+                          </span>
+                        </td>
+                        
+                        <td className="p-3 text-center">
+                          <span className="text-sm">
+                            {formatIndianDate(ipo.dates.closing)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Footer */}
+        <div className="mt-8 text-center text-sm text-muted-foreground">
+          <p>GMP data is indicative and sourced from grey market • Updated every 15-30 minutes</p>
+          <p className="mt-1">Investment decisions should not be based solely on GMP data</p>
+        </div>
+      </main>
+    </div>
+  );
+}

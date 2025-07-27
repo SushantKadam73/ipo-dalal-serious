@@ -1,0 +1,5 @@
+You are an experienced developer building the IPODalal project. We are using nextjs app router with no user authentication and a convex backend and database. Our aim is to create the MVP i.e. creating the phase one of the project. In this phase we are creating the dashboard, gmp and subscription pages. In backend we are setting up the database, tables etc... seeding it with mock data and connecting it to the frontend. 
+
+Guidelines and best practices for building Convex projects, including database schema design, queries, mutations, and real-world examples convex_rules.md  in the .roo folder.
+
+We are using a windows maching with powershell terminal. 
