@@ -2,9 +2,9 @@
 @import "tw-animate-css";
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Josefin+Sans:wght@400;700&display=swap');
 
-@custom-variant dark (&:is(.dark *));
+/* Removed unsupported @custom-variant dark (&:is(.dark *)); */
 
-@theme inline {
+:root {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-josefin-sans);
@@ -115,11 +115,14 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: var(--color-border);
+    outline: 1px solid var(--color-ring);
+    outline-offset: 2px;
   }
   
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
     font-family: var(--font-josefin-sans);
   }
   
@@ -150,19 +153,25 @@
   
   /* Table styling improvements */
   .data-table {
-    @apply border-collapse border-spacing-0;
+    border-collapse: collapse;
+    border-spacing: 0;
   }
   
   .data-table th {
-    @apply bg-muted text-left p-3 font-bold border-b border-border;
+    background-color: var(--muted);
+    text-align: left;
+    padding: 0.75rem;
+    font-weight: bold;
+    border-bottom: 1px solid var(--border);
     font-family: var(--font-space-grotesk);
   }
   
   .data-table td {
-    @apply p-3 border-b border-border/50;
+    padding: 0.75rem;
+    border-bottom: 1px solid rgba(51, 51, 51, 0.5); /* var(--border)/50 */
   }
   
   .data-table tr:hover {
-    @apply bg-muted/30;
+    background-color: rgba(42, 42, 42, 0.3); /* var(--muted)/30 */
   }
 }
