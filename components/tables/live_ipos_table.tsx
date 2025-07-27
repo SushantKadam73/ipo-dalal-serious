@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { FrontendIPO } from "@/types/database";
-import { IPOBadge } from "@/components/common/ipo-badge";
-import { GMPIndicator } from "@/components/common/gmp-indicator";
+import { IPOBadge } from "@/components/common/ipo_badge";
+import { GMPIndicator } from "@/components/common/gmp_indicator";
 import { formatIndianCurrency, formatIndianDate } from "@/lib/formatters";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";

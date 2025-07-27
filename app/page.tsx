@@ -1,8 +1,8 @@
 "use client";
 
 import { Header } from "@/components/layout/header";
-import { LiveIPOsTable } from "@/components/tables/live-ipos-table";
-import { ListedIPOsTable } from "@/components/tables/listed-ipos-table";
+import { LiveIPOsTable } from "@/components/tables/live_ipos_table";
+import { ListedIPOsTable } from "@/components/tables/listed_ipos_table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FrontendIPO } from "@/types/database";
-import { IPOBadge } from "@/components/common/ipo-badge";
+import { IPOBadge } from "@/components/common/ipo_badge";
 import { formatIndianCurrency, formatIndianDate, formatPercentage } from "@/lib/formatters";
 import { TrendingUp, TrendingDown, Minus, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
