@@ -41,8 +41,11 @@ export function LiveIPOsTable({
     return sortDirection === "asc" ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />;
   };
 
-  const getNestedValue = (obj: any, path: string) => {
-    return path.split('.').reduce((value, key) => value?.[key], obj);
+  const getNestedValue = (obj: unknown, path: string): unknown => {
+    return path.split('.').reduce((value: unknown, key: string) => 
+      value && typeof value === 'object' && key in value 
+        ? (value as Record<string, unknown>)[key] 
+        : undefined, obj);
   };
 
   const sortedData = [...data].sort((a, b) => {
@@ -50,7 +53,22 @@ export function LiveIPOsTable({
     const bValue = getNestedValue(b, sortField);
     
     if (aValue === bValue) return 0;
-    const comparison = aValue < bValue ? -1 : 1;
+    
+    // Handle different types for sorting
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      const comparison = aValue.localeCompare(bValue);
+      return sortDirection === "asc" ? comparison : -comparison;
+    }
+    
+    if (typeof aValue === 'number' && typeof bValue === 'number') {
+      const comparison = aValue - bValue;
+      return sortDirection === "asc" ? comparison : -comparison;
+    }
+    
+    // Fallback for other types
+    const aStr = String(aValue);
+    const bStr = String(bValue);
+    const comparison = aStr.localeCompare(bStr);
     return sortDirection === "asc" ? comparison : -comparison;
   });
 

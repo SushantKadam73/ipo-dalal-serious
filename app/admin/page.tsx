@@ -21,14 +21,13 @@ import {
   useSeedIPOs,
   useSeedGMPHistory,
   useSeedSubscriptionHistory,
-  useClearAllData,
-  useDashboardStats
+  useClearAllData
 } from "@/hooks/useIPOData";
 
 interface OperationResult {
   success: boolean;
   message: string;
-  data?: any;
+  data?: unknown;
   error?: string;
 }
 
@@ -41,17 +40,17 @@ export default function AdminPage() {
   const { seedGMPHistory } = useSeedGMPHistory();
   const { seedSubscriptionHistory } = useSeedSubscriptionHistory();
   const { clearAllData } = useClearAllData();
-  const { data: dashboardStats } = useDashboardStats();
 
-  const handleOperation = async (operation: string, operationName: string, fn: () => Promise<any>) => {
+  const handleOperation = async (operation: string, operationName: string, fn: () => Promise<unknown>) => {
     setLoading(operationName);
     try {
       const result = await fn();
+      const resultObj = result as { message?: string };
       setResults(prev => ({
         ...prev,
         [operation]: {
           success: true,
-          message: result.message || `${operationName} completed successfully`,
+          message: resultObj.message || `${operationName} completed successfully`,
           data: result
         }
       }));
@@ -392,11 +391,11 @@ export default function AdminPage() {
                       {result.message}
                     </p>
                     
-                    {result.data && (
+                    {result.data ? (
                       <div className="bg-muted p-3 rounded text-xs font-mono">
                         <pre>{JSON.stringify(result.data, null, 2)}</pre>
                       </div>
-                    )}
+                    ) : null}
                     
                     {result.error && (
                       <div className="bg-red-50 border border-red-200 p-3 rounded text-xs text-red-600">
@@ -422,8 +421,8 @@ export default function AdminPage() {
             <ol className="list-decimal list-inside space-y-2 text-sm">
               <li>Run <code className="bg-muted px-2 py-1 rounded">npm run dev</code> to start the development server and generate Convex API</li>
               <li>Once the API is generated, the hooks in <code className="bg-muted px-2 py-1 rounded">hooks/useIPOData.ts</code> will work</li>
-              <li>Click "Seed IPO Data" to populate the database with mock IPO records</li>
-              <li>Run "Seed GMP History" and "Seed Subscription History" to create historical data</li>
+              <li>Click &quot;Seed IPO Data&quot; to populate the database with mock IPO records</li>
+              <li>Run &quot;Seed GMP History&quot; and &quot;Seed Subscription History&quot; to create historical data</li>
               <li>Navigate back to the main dashboard to see real data in action</li>
               <li>Use the admin panel to monitor database operations and performance</li>
             </ol>

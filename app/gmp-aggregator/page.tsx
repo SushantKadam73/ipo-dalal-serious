@@ -8,7 +8,6 @@ import { IPOBadge } from "@/components/common/ipo_badge";
 import { GMPIndicator } from "@/components/common/gmp_indicator";
 import { RefreshCw, Download, ArrowUpDown, ArrowUp, ArrowDown, Database, AlertCircle } from "lucide-react";
 import { useGMPAggregatorData, useIPODataRefresh } from "@/hooks/useIPOData";
-import { FrontendIPO } from "@/types/database";
 import { formatIndianCurrency, formatIndianDate, formatSubscriptionTimes } from "@/lib/formatters";
 
 type SortField = "type" | "company" | "ipoSize" | "gmp.percentage" | "subscription.total" | "dates.closing";
@@ -54,8 +53,11 @@ export default function GMPAggregator() {
     return sortDirection === "asc" ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />;
   };
 
-  const getNestedValue = (obj: any, path: string) => {
-    return path.split('.').reduce((value, key) => value?.[key], obj);
+  const getNestedValue = (obj: unknown, path: string): unknown => {
+    return path.split('.').reduce((value: unknown, key: string) => 
+      value && typeof value === 'object' && key in value 
+        ? (value as Record<string, unknown>)[key] 
+        : undefined, obj);
   };
 
   const sortedIPOs = (ipos || []).sort((a, b) => {
@@ -63,7 +65,23 @@ export default function GMPAggregator() {
     const bValue = getNestedValue(b, sortField);
     
     if (aValue === bValue) return 0;
-    const comparison = aValue < bValue ? -1 : 1;
+    
+    // Handle different types for sorting
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      const comparison = aValue.localeCompare(bValue);
+      return sortDirection === "asc" ? comparison : -comparison;
+    }
+    
+    if (typeof aValue === 'number' && typeof bValue === 'number') {
+      const comparison = aValue - bValue;
+      return sortDirection === "asc" ? comparison : -comparison;
+    }
+    
+    // Fallback for other types
+    const aStr = String(aValue);
+    const bStr = String(bValue);
+    const comparison = aStr.localeCompare(bStr);
+    return sortDirection === "asc" ? comparison : -comparison;
     return sortDirection === "asc" ? comparison : -comparison;
   });
 
@@ -273,7 +291,7 @@ export default function GMPAggregator() {
                           <div>
                             <p className="text-lg font-medium text-muted-foreground mb-2">No Data Available</p>
                             <p className="text-sm text-muted-foreground mb-4">
-                              Click "Seed Database" to populate with sample IPO data
+                              Click &quot;Seed Database&quot; to populate with sample IPO data
                             </p>
                             <Button onClick={handleSeedDatabase} className="flex items-center gap-2">
                               <Database className="w-4 h-4" />

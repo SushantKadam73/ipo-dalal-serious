@@ -105,7 +105,7 @@ export default function Dashboard() {
                 <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                 <p className="text-lg font-medium text-muted-foreground mb-2">No Data Available</p>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Click "Seed Database" to populate with sample IPO data
+                  Click &quot;Seed Database&quot; to populate with sample IPO data
                 </p>
                 <Button onClick={handleSeedDatabase} className="flex items-center gap-2">
                   <Database className="w-4 h-4" />

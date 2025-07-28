@@ -24,7 +24,7 @@ interface DataTableProps<T> {
   emptyMessage?: string;
 }
 
-export function DataTable<T extends Record<string, any>>({
+export function DataTable<T extends Record<string, unknown>>({
   data,
   columns,
   onRowClick,
@@ -41,12 +41,12 @@ export function DataTable<T extends Record<string, any>>({
     setSortOptions(prev => {
       if (prev?.field === field) {
         return {
-          field: field as any,
+          field: field as SortOptions['field'],
           direction: prev.direction === "asc" ? "desc" : "asc"
         };
       }
       return {
-        field: field as any,
+        field: field as SortOptions['field'],
         direction: "asc"
       };
     });
@@ -61,13 +61,30 @@ export function DataTable<T extends Record<string, any>>({
 
       if (aValue === bValue) return 0;
 
-      const comparison = aValue < bValue ? -1 : 1;
+      // Handle different types for sorting
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        const comparison = aValue.localeCompare(bValue);
+        return sortOptions.direction === "asc" ? comparison : -comparison;
+      }
+      
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        const comparison = aValue - bValue;
+        return sortOptions.direction === "asc" ? comparison : -comparison;
+      }
+      
+      // Fallback for other types
+      const aStr = String(aValue);
+      const bStr = String(bValue);
+      const comparison = aStr.localeCompare(bStr);
       return sortOptions.direction === "asc" ? comparison : -comparison;
     });
   };
 
-  const getNestedValue = (obj: any, path: string) => {
-    return path.split('.').reduce((value, key) => value?.[key], obj);
+  const getNestedValue = (obj: unknown, path: string): unknown => {
+    return path.split('.').reduce((value: unknown, key: string) => 
+      value && typeof value === 'object' && key in value 
+        ? (value as Record<string, unknown>)[key] 
+        : undefined, obj);
   };
 
   const getSortIcon = (field: string) => {
