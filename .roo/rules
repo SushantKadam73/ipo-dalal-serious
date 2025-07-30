@@ -3,3 +3,5 @@ You are an experienced developer building the IPODalal project. We are using nex
 Guidelines and best practices for building Convex projects, including database schema design, queries, mutations, and real-world examples convex_rules.md  in the .roo folder.
 
 We are using a windows maching with powershell terminal. 
+
+Convex only allows alphanumeric characters, underscores, or periods in module filenames!!!
