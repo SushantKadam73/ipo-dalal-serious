@@ -18,10 +18,17 @@ export function CountdownTimer({
   showIcon = true,
   size = "md"
 }: CountdownTimerProps) {
-  const [countdown, setCountdown] = useState<string>("");
+  const [countdown, setCountdown] = useState<string>("Loading...");
   const [isExpired, setIsExpired] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
     const updateCountdown = () => {
       const target = typeof targetDate === 'string' ? new Date(targetDate) : targetDate;
       const now = new Date();
@@ -43,7 +50,7 @@ export function CountdownTimer({
     const interval = setInterval(updateCountdown, 60000);
 
     return () => clearInterval(interval);
-  }, [targetDate]);
+  }, [targetDate, isMounted]);
 
   const sizeClasses = {
     sm: "text-xs",
@@ -67,7 +74,7 @@ export function CountdownTimer({
       {showIcon && (
         <Clock className={cn(iconSizes[size])} />
       )}
-      <span className="font-medium">{countdown}</span>
+      <span className="font-medium">{isMounted ? countdown : "Loading..."}</span>
     </div>
   );
 }

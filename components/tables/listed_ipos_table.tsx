@@ -14,7 +14,7 @@ interface ListedIPOsTableProps {
   className?: string;
 }
 
-type SortField = "type" | "company" | "symbol" | "ipoSize" | "listingPrice" | "listingGains" | "listingDate";
+type SortField = "company" | "symbol" | "ipoSize" | "price.min" | "listingPrice" | "listingGains" | "gmp.percentage" | "actualProfit.retail" | "listingDate";
 
 export function ListedIPOsTable({
   data,
@@ -148,17 +148,7 @@ export function ListedIPOsTable({
           <thead>
             <tr>
               <th className="p-3 text-left font-bold border-b border-border bg-muted">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleSort("type")}
-                  className="h-auto p-0 font-bold hover:bg-transparent"
-                >
-                  <div className="flex items-center gap-2">
-                    Type
-                    {getSortIcon("type")}
-                  </div>
-                </Button>
+                Type
               </th>
               <th className="p-3 text-left font-bold border-b border-border bg-muted">
                 <Button
@@ -200,7 +190,17 @@ export function ListedIPOsTable({
                 </Button>
               </th>
               <th className="p-3 text-center font-bold border-b border-border bg-muted">
-                Price (₹)
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSort("price.min")}
+                  className="h-auto p-0 font-bold hover:bg-transparent"
+                >
+                  <div className="flex items-center gap-2">
+                    Price (₹)
+                    {getSortIcon("price.min")}
+                  </div>
+                </Button>
               </th>
               <th className="p-3 text-right font-bold border-b border-border bg-muted">
                 <Button
@@ -229,10 +229,30 @@ export function ListedIPOsTable({
                 </Button>
               </th>
               <th className="p-3 text-center font-bold border-b border-border bg-muted">
-                GMP vs Actual
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSort("gmp.percentage")}
+                  className="h-auto p-0 font-bold hover:bg-transparent"
+                >
+                  <div className="flex items-center gap-2">
+                    GMP vs Actual
+                    {getSortIcon("gmp.percentage")}
+                  </div>
+                </Button>
               </th>
               <th className="p-3 text-right font-bold border-b border-border bg-muted">
-                Profit (₹)
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSort("actualProfit.retail")}
+                  className="h-auto p-0 font-bold hover:bg-transparent"
+                >
+                  <div className="flex items-center gap-2">
+                    Profit (₹)
+                    {getSortIcon("actualProfit.retail")}
+                  </div>
+                </Button>
               </th>
               <th className="p-3 text-center font-bold border-b border-border bg-muted">
                 <Button
