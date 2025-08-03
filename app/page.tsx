@@ -21,7 +21,9 @@ export default function Dashboard() {
 
   const handleRefresh = async () => {
     // Refresh is automatic with Convex real-time updates
-    window.location.reload();
+    if (typeof window !== 'undefined') {
+      window.location.reload();
+    }
   };
   
   const handleSeedDatabase = async () => {

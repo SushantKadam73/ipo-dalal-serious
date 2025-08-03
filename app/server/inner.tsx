@@ -21,7 +21,9 @@ export default function Home({
       <button
         className="bg-foreground text-background px-4 py-2 rounded-md mx-auto"
         onClick={() => {
-          void addNumber({ value: Math.floor(Math.random() * 10) });
+          if (typeof window !== 'undefined') {
+            void addNumber({ value: Math.floor(Math.random() * 10) });
+          }
         }}
       >
         Add a random number

@@ -10,7 +10,7 @@ import { RefreshCw, Download, ArrowUpDown, ArrowUp, ArrowDown, Database, AlertCi
 import { useSubscriptionAggregatorData, useIPODataRefresh } from "@/hooks/useIPOData";
 import { formatIndianCurrency, formatIndianDate, formatSubscriptionTimes } from "@/lib/formatters";
 
-type SortField = "type" | "company" | "ipoSize" | "gmp.percentage" | "subscription.total" | "subscription.qib" | "subscription.retail" | "dates.closing";
+type SortField = "company" | "ipoSize" | "gmp.percentage" | "subscription.qib" | "subscription.bhni" | "subscription.shni" | "subscription.retail" | "subscription.employee" | "subscription.shareholder" | "subscription.total" | "subscription.totalBidAmount" | "subscription.totalApplications" | "dates.closing";
 
 export default function SubscriptionAggregator() {
   const [sortField, setSortField] = useState<SortField>("dates.closing");
@@ -25,7 +25,9 @@ export default function SubscriptionAggregator() {
   const hasData = ipos.length > 0;
 
   const handleRefresh = async () => {
-    window.location.reload();
+    if (typeof window !== 'undefined') {
+      window.location.reload();
+    }
   };
 
   const handleSeedDatabase = async () => {
@@ -183,17 +185,7 @@ export default function SubscriptionAggregator() {
                 <thead>
                   <tr>
                     <th className="p-3 text-left font-bold border-b border-border bg-muted">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSort("type")}
-                        className="h-auto p-0 font-bold hover:bg-transparent"
-                      >
-                        <div className="flex items-center gap-2">
-                          Type
-                          {getSortIcon("type")}
-                        </div>
-                      </Button>
+                      Type
                     </th>
                     <th className="p-3 text-left font-bold border-b border-border bg-muted">
                       <Button
@@ -248,10 +240,30 @@ export default function SubscriptionAggregator() {
                       </Button>
                     </th>
                     <th className="p-3 text-center font-bold border-b border-border bg-muted">
-                      BHNI
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("subscription.bhni")}
+                        className="h-auto p-0 font-bold hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          BHNI
+                          {getSortIcon("subscription.bhni")}
+                        </div>
+                      </Button>
                     </th>
                     <th className="p-3 text-center font-bold border-b border-border bg-muted">
-                      SHNI
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("subscription.shni")}
+                        className="h-auto p-0 font-bold hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          SHNI
+                          {getSortIcon("subscription.shni")}
+                        </div>
+                      </Button>
                     </th>
                     <th className="p-3 text-center font-bold border-b border-border bg-muted">
                       <Button
@@ -267,10 +279,30 @@ export default function SubscriptionAggregator() {
                       </Button>
                     </th>
                     <th className="p-3 text-center font-bold border-b border-border bg-muted">
-                      Employee
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("subscription.employee")}
+                        className="h-auto p-0 font-bold hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          Employee
+                          {getSortIcon("subscription.employee")}
+                        </div>
+                      </Button>
                     </th>
                     <th className="p-3 text-center font-bold border-b border-border bg-muted">
-                      Shareholder
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("subscription.shareholder")}
+                        className="h-auto p-0 font-bold hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          Shareholder
+                          {getSortIcon("subscription.shareholder")}
+                        </div>
+                      </Button>
                     </th>
                     <th className="p-3 text-center font-bold border-b border-border bg-muted">
                       <Button
@@ -286,10 +318,30 @@ export default function SubscriptionAggregator() {
                       </Button>
                     </th>
                     <th className="p-3 text-right font-bold border-b border-border bg-muted">
-                      Total Bid Amount (₹Cr)
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("subscription.totalBidAmount")}
+                        className="h-auto p-0 font-bold hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          Total Bid Amount (₹Cr)
+                          {getSortIcon("subscription.totalBidAmount")}
+                        </div>
+                      </Button>
                     </th>
                     <th className="p-3 text-center font-bold border-b border-border bg-muted">
-                      Total Applications
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("subscription.totalApplications")}
+                        className="h-auto p-0 font-bold hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          Total Applications
+                          {getSortIcon("subscription.totalApplications")}
+                        </div>
+                      </Button>
                     </th>
                     <th className="p-3 text-center font-bold border-b border-border bg-muted">
                       <Button

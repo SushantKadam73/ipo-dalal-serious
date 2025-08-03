@@ -10,7 +10,7 @@ import { RefreshCw, Download, ArrowUpDown, ArrowUp, ArrowDown, Database, AlertCi
 import { useGMPAggregatorData, useIPODataRefresh } from "@/hooks/useIPOData";
 import { formatIndianCurrency, formatIndianDate, formatSubscriptionTimes } from "@/lib/formatters";
 
-type SortField = "type" | "company" | "ipoSize" | "gmp.percentage" | "subscription.total" | "dates.closing";
+type SortField = "company" | "ipoSize" | "price.min" | "gmp.percentage" | "gmp.estListingPrice" | "gmp.estProfit.retail" | "kostakRates.retail" | "subjectToSauda.retail" | "subscription.total" | "dates.closing";
 
 export default function GMPAggregator() {
   const [sortField, setSortField] = useState<SortField>("dates.closing");
@@ -22,7 +22,9 @@ export default function GMPAggregator() {
   const hasData = ipos && ipos.length > 0;
 
   const handleRefresh = async () => {
-    window.location.reload();
+    if (typeof window !== 'undefined') {
+      window.location.reload();
+    }
   };
 
   const handleSeedDatabase = async () => {
@@ -178,17 +180,7 @@ export default function GMPAggregator() {
                 <thead>
                   <tr>
                     <th className="p-3 text-left font-bold border-b border-border bg-muted">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSort("type")}
-                        className="h-auto p-0 font-bold hover:bg-transparent"
-                      >
-                        <div className="flex items-center gap-2">
-                          Type
-                          {getSortIcon("type")}
-                        </div>
-                      </Button>
+                      Type
                     </th>
                     <th className="p-3 text-left font-bold border-b border-border bg-muted">
                       <Button
@@ -217,7 +209,17 @@ export default function GMPAggregator() {
                       </Button>
                     </th>
                     <th className="p-3 text-center font-bold border-b border-border bg-muted">
-                      Price (₹)
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("price.min")}
+                        className="h-auto p-0 font-bold hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          Price (₹)
+                          {getSortIcon("price.min")}
+                        </div>
+                      </Button>
                     </th>
                     <th className="p-3 text-center font-bold border-b border-border bg-muted">
                       <Button
@@ -233,16 +235,56 @@ export default function GMPAggregator() {
                       </Button>
                     </th>
                     <th className="p-3 text-center font-bold border-b border-border bg-muted">
-                      Est. Listing Price (₹)
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("gmp.estListingPrice")}
+                        className="h-auto p-0 font-bold hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          Est. Listing Price (₹)
+                          {getSortIcon("gmp.estListingPrice")}
+                        </div>
+                      </Button>
                     </th>
                     <th className="p-3 text-right font-bold border-b border-border bg-muted">
-                      Est. Profit (₹)
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("gmp.estProfit.retail")}
+                        className="h-auto p-0 font-bold hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          Est. Profit (₹)
+                          {getSortIcon("gmp.estProfit.retail")}
+                        </div>
+                      </Button>
                     </th>
                     <th className="p-3 text-center font-bold border-b border-border bg-muted">
-                      Kostak Rates (₹)
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("kostakRates.retail")}
+                        className="h-auto p-0 font-bold hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          Kostak Rates (₹)
+                          {getSortIcon("kostakRates.retail")}
+                        </div>
+                      </Button>
                     </th>
                     <th className="p-3 text-center font-bold border-b border-border bg-muted">
-                      Subject 2 Sauda Rates (₹)
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort("subjectToSauda.retail")}
+                        className="h-auto p-0 font-bold hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          Subject 2 Sauda Rates (₹)
+                          {getSortIcon("subjectToSauda.retail")}
+                        </div>
+                      </Button>
                     </th>
                     <th className="p-3 text-center font-bold border-b border-border bg-muted">
                       <Button

@@ -15,7 +15,7 @@ interface LiveIPOsTableProps {
   className?: string;
 }
 
-type SortField = "type" | "company" | "ipoSize" | "gmp.percentage" | "dates.closing";
+type SortField = "company" | "ipoSize" | "lot" | "price.min" | "amount.retail" | "gmp.percentage" | "dates.closing" | "dates.allotment" | "dates.refund" | "dates.listing";
 
 export function LiveIPOsTable({
   data,
@@ -137,17 +137,7 @@ export function LiveIPOsTable({
           <thead>
             <tr>
               <th className="p-3 text-left font-bold border-b border-border bg-muted">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleSort("type")}
-                  className="h-auto p-0 font-bold hover:bg-transparent"
-                >
-                  <div className="flex items-center gap-2">
-                    Type
-                    {getSortIcon("type")}
-                  </div>
-                </Button>
+                Type
               </th>
               <th className="p-3 text-left font-bold border-b border-border bg-muted">
                 <Button
@@ -176,13 +166,43 @@ export function LiveIPOsTable({
                 </Button>
               </th>
               <th className="p-3 text-center font-bold border-b border-border bg-muted">
-                Lot
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSort("lot")}
+                  className="h-auto p-0 font-bold hover:bg-transparent"
+                >
+                  <div className="flex items-center gap-2">
+                    Lot
+                    {getSortIcon("lot")}
+                  </div>
+                </Button>
               </th>
               <th className="p-3 text-center font-bold border-b border-border bg-muted">
-                Price (₹)
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSort("price.min")}
+                  className="h-auto p-0 font-bold hover:bg-transparent"
+                >
+                  <div className="flex items-center gap-2">
+                    Price (₹)
+                    {getSortIcon("price.min")}
+                  </div>
+                </Button>
               </th>
               <th className="p-3 text-right font-bold border-b border-border bg-muted">
-                Amount (₹)
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSort("amount.retail")}
+                  className="h-auto p-0 font-bold hover:bg-transparent"
+                >
+                  <div className="flex items-center gap-2">
+                    Amount (₹)
+                    {getSortIcon("amount.retail")}
+                  </div>
+                </Button>
               </th>
               <th className="p-3 text-center font-bold border-b border-border bg-muted">
                 <Button
@@ -211,13 +231,43 @@ export function LiveIPOsTable({
                 </Button>
               </th>
               <th className="p-3 text-center font-bold border-b border-border bg-muted">
-                Allotment
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSort("dates.allotment")}
+                  className="h-auto p-0 font-bold hover:bg-transparent"
+                >
+                  <div className="flex items-center gap-2">
+                    Allotment
+                    {getSortIcon("dates.allotment")}
+                  </div>
+                </Button>
               </th>
               <th className="p-3 text-center font-bold border-b border-border bg-muted">
-                Refund
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSort("dates.refund")}
+                  className="h-auto p-0 font-bold hover:bg-transparent"
+                >
+                  <div className="flex items-center gap-2">
+                    Refund
+                    {getSortIcon("dates.refund")}
+                  </div>
+                </Button>
               </th>
               <th className="p-3 text-center font-bold border-b border-border bg-muted">
-                Listing
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSort("dates.listing")}
+                  className="h-auto p-0 font-bold hover:bg-transparent"
+                >
+                  <div className="flex items-center gap-2">
+                    Listing
+                    {getSortIcon("dates.listing")}
+                  </div>
+                </Button>
               </th>
             </tr>
           </thead>
